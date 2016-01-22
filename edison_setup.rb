@@ -29,6 +29,9 @@ respond_on("word:", "prototype\n")
 respond_on(SHELL_PROMPT, "echo #{hostname} > /etc/hostname\n") 
 respond_on(SHELL_PROMPT, "hostname -F /etc/hostname\n")
 respond_on(SHELL_PROMPT, "echo -e \"network={\\n  ssid=\\\"squishnet\\\"\\n  psk=\\\"s1lv3repoxy\\\"\\n}\" >> /etc/wpa_supplicant/wpa_supplicant.conf\n")
+respond_on(SHELL_PROMPT, "systemctl enable wpa_supplicant\n")
+respond_on(SHELL_PROMPT, "systemctl start wpa_supplicant\n")
+respond_on(SHELL_PROMPT, "systemctl restart mdns\n")
 respond_on(SHELL_PROMPT, "exit\n")
 
 $serialport.close

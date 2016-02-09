@@ -9,14 +9,24 @@ def read(len)
   return $serialport.read(len)
 end
 
-def respond_on(match, response)
+def respond_on(match, command)
    data = read(1000);
    if data =~ Regexp.new(match)
-     $serialport.write(response)
+     $serialport.write(command)
    else
      puts "Couldn't find #{match}, got #{data} instead"
      throw :badMatch
    end
+end
+
+def result(command)
+   # clean out the buffer
+   data = read(1000)
+   $serialport.write(command)
+   # read back the command
+   $serialport.gets
+   # get the actual result
+   return $serialport.gets
 end
 
 state = 0
@@ -35,6 +45,7 @@ if hostname
 else
   respond_on(SHELL_PROMPT, "N=`cat /factory/serial_number | wc -c`\n")
   respond_on(SHELL_PROMPT, "cat /factory/serial_number | cut -c $(($N-8))-$(($N-3)) > /etc/hostname\n")
+  new_hostname = result("cat /etc/hostname\n").chomp
 end
 
 respond_on(SHELL_PROMPT, "hostname -F /etc/hostname\n")
@@ -45,3 +56,6 @@ respond_on(SHELL_PROMPT, "systemctl restart mdns\n")
 respond_on(SHELL_PROMPT, "exit\n")
 
 $serialport.close
+
+puts "Edison setup complete."
+puts "Hostname: #{new_hostname}.local"

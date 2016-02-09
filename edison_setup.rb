@@ -20,13 +20,23 @@ def respond_on(match, response)
 end
 
 state = 0
-hostname = ARGV[0]
+
+if ARGV.length > 0
+ hostname = ARGV[0]
+end
 
 $serialport.write("\n");
 
 respond_on("login:", "root\n")
 respond_on("word:", "prototype\n")
-respond_on(SHELL_PROMPT, "echo #{hostname} > /etc/hostname\n") 
+
+if hostname
+  respond_on(SHELL_PROMPT, "echo #{hostname} > /etc/hostname\n")
+else
+  respond_on(SHELL_PROMPT, "N=`cat /factory/serial_number | wc -c`\n")
+  respond_on(SHELL_PROMPT, "cat /factory/serial_number | cut -c $(($N-8))-$(($N-3)) > /etc/hostname\n")
+end
+
 respond_on(SHELL_PROMPT, "hostname -F /etc/hostname\n")
 respond_on(SHELL_PROMPT, "echo -e \"network={\\n  ssid=\\\"squishnet\\\"\\n  psk=\\\"s1lv3repoxy\\\"\\n}\" >> /etc/wpa_supplicant/wpa_supplicant.conf\n")
 respond_on(SHELL_PROMPT, "systemctl enable wpa_supplicant\n")

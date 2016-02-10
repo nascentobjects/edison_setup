@@ -5,3 +5,4 @@ A Ruby script that connects to an Edison via serial and performs basic configura
 * Set hostname
 * Add office SSID
 * Enable wpa_supplicant
+* Set timezone
